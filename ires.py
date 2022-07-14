@@ -124,7 +124,7 @@ class IRESObject:
             data_range = max(plot_data)-min(plot_data)
             if raw_color:
                 ax[-1].imshow(interp[None, :], extent=[0, len(plot_data), min(plot_data)-(data_range * .05), max(plot_data)+(data_range * .05)], cmap=cmap, aspect='auto')
-            ax[-1].plot(raw, color="black")
+            ax[-1].plot(plot_data, color="black")
             ax[-1].set_ylabel("Raw", rotation=22.5, labelpad=0, va="center", ha="right")
             ax[-1].set_yticklabels('')
             ax[-1].set_yticks([min(plot_data), min(plot_data) + (data_range / 2), max(plot_data)])
