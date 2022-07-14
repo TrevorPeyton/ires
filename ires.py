@@ -14,8 +14,8 @@ _moment_names = {
         "std": "Standard Deviation",
         "skew": "Skewness",
         "kur": "Kurtosis",
-        "m6": "Moment 6",
-        "m7": "Moment 7",
+        # "m6": "Moment 6",
+        # "m7": "Moment 7",
     }
 
 _moment_funcs = {
@@ -24,8 +24,8 @@ _moment_funcs = {
     "std":  lambda x: np.std(x, axis=-1),
     "skew":  lambda x: np.array(stats.skew(x, axis=-1)),
     "kur":  lambda x: np.array(stats.kurtosis(x, axis=-1)),
-    "m6":  lambda x: np.array(stats.moment(x, moment=6, axis=-1)),
-    "m7":  lambda x: np.array(stats.moment(x, moment=7, axis=-1)),
+    # "m6":  lambda x: np.array(stats.moment(x, moment=6, axis=-1)),
+    # "m7":  lambda x: np.array(stats.moment(x, moment=7, axis=-1)),
 }
 
 class IRESObject:
