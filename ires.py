@@ -28,15 +28,16 @@ _moment_funcs = {
     "m7":  lambda x: np.array(stats.moment(x, moment=7, axis=-1)),
 }
 
-_default_moments = ["mean", "var", "std", "skew", "kur"]
-
 class IRESObject:
 
     def _line_moment_func(i, o, w, s, f_s, f):
         o[...] = f(i[np.arange(w) + np.arange(f_s*s)[::s, None]])
 
-    def __init__(self, data, win, stride, normalized=True, moments=_default_moments, moment_funcs=_moment_funcs, moment_names=_moment_names, *args, **kwargs):
-        self.moments = moments
+    def __init__(self, data, win, stride, normalized=True, moments=None, moment_funcs=_moment_funcs, moment_names=_moment_names, *args, **kwargs):
+        if moments is None:
+            self.moments = list(_moment_funcs.keys())
+        else:
+            self.moments = moments
         self.data = data
         self.moment_funcs = moment_funcs
         self.moment_names = moment_names
