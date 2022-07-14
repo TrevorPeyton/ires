@@ -57,7 +57,7 @@ class IRESObject:
         
         #loop through all dimensions just modifying last dimension
         for l in list(np.ndindex(data.shape[:-1])):
-            for n, m in enumerate(moments):
+            for n, m in enumerate(self.moments):
                 if m in self.moment_funcs:
                     _line_moment_func(data[l], moment_data[l + (n,)], win, stride, final_shape, self.moment_funcs[m])
 
