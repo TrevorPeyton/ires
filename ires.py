@@ -1,27 +1,14 @@
-from typing import final
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-moment_funcs = {
-    "mean": lambda x: np.mean(x, axis=-1),
-    "var":  lambda x: np.var(x, axis=-1),
-    "std":  lambda x: np.std(x, axis=-1),
-    "skew":  lambda x: np.array(stats.skew(x, axis=-1)),
-    "kur":  lambda x: np.array(stats.kurtosis(x, axis=-1)),
-    "m6":  lambda x: np.array(stats.moment(x, moment=6, axis=-1)),
-    "m7":  lambda x: np.array(stats.moment(x, moment=7, axis=-1)),
-}
+def from_data(data, win, stride, *args, **kwargs):
+    return IRESObject(data, win, stride, *args, **kwargs)
 
-def _line_moment_func(i, o, w, s, f_s,f):
+def _line_moment_func(i, o, w, s, f_s, f):
     o[...] = f(i[np.arange(w) + np.arange(f_s*s)[::s, None]])
 
-# def _moment_func(i, o, m):
-#     o = stats.moment(i, moment=m, axis=0)
-
-class IRES:
-
-    moment_names = {
+_moment_names = {
         "mean": "Mean",
         "var": "Variance",
         "std": "Standard Deviation",
@@ -31,51 +18,61 @@ class IRES:
         "m7": "Moment 7",
     }
 
-    default_moments = ["mean", "var", "std", "skew", "kur"]
+_moment_funcs = {
+    "mean": lambda x: np.mean(x, axis=-1),
+    "var":  lambda x: np.var(x, axis=-1),
+    "std":  lambda x: np.std(x, axis=-1),
+    "skew":  lambda x: np.array(stats.skew(x, axis=-1)),
+    "kur":  lambda x: np.array(stats.kurtosis(x, axis=-1)),
+    "m6":  lambda x: np.array(stats.moment(x, moment=6, axis=-1)),
+    "m7":  lambda x: np.array(stats.moment(x, moment=7, axis=-1)),
+}
 
-    def __init__(self, data, win, stride, normalized=True, moments=default_moments, in_place=False):#, batch=False, batch_dim=-1):
+_default_moments = ["mean", "var", "std", "skew", "kur"]
+
+class IRESObject:
+
+    def _line_moment_func(i, o, w, s, f_s, f):
+        o[...] = f(i[np.arange(w) + np.arange(f_s*s)[::s, None]])
+
+    def __init__(self, data, win, stride, normalized=True, moments=_default_moments, moment_funcs=_moment_funcs, moment_names=_moment_names, *args, **kwargs):
         self.moments = moments
         self.data = data
-        expended = False
+        self.moment_funcs = moment_funcs
+        self.moment_names = moment_names
+        self.normalized = normalized
 
+        print()
+        print(*kwargs)
+
+        #expand 1d data to match nd data
+        expended = False
         if data.ndim == 1:
             data = data[None, :]
             expended = True
 
-        # sub_windows = np.lib.stride_tricks.sliding_window_view(np.arange(data.shape[-1]), win)[::stride]
-        # print(sub_windows.shape)
-
+        #calculate shape after win_size and stride
         final_shape = ((data.shape[-1]-win)//stride)
         if final_shape <= 0:
             raise Exception("Window/Stride too large")
-        
         moment_data = np.empty(data.shape[:-1] + (len(self.moments), final_shape)) # initialize empty array with shape (# samples, # moments, output shape length)
         
-        
+        #loop through all dimensions just modifying last dimension
         for l in list(np.ndindex(data.shape[:-1])):
             for n, m in enumerate(moments):
-                if m in moment_funcs:
-                    _line_moment_func(data[l], moment_data[l + (n,)], win, stride, final_shape, moment_funcs[m])
+                if m in self.moment_funcs:
+                    _line_moment_func(data[l], moment_data[l + (n,)], win, stride, final_shape, self.moment_funcs[m])
 
-                # for l in range(np.product(data.shape[:-1])):
-                #     _line_moment_func(data[np.unravel_index(l, data.shape[:-1])], moment_data[np.unravel_index(l, data.shape[:-1])+(n, None)], win, stride, final_shape, moment_funcs[m])
-
-                
-        self.normalized = normalized
-
-        if normalized:
+        if self.normalized:
             moment_data = (moment_data - moment_data.min(axis=-1)[..., None]) / (moment_data.max(axis=-1) - moment_data.min(axis=-1))[..., None]
 
-        #Remove extra dimention added to make calcs easier
+        #Return in original shape if expanded
         if expended:
             moment_data = np.squeeze(moment_data, axis=0)
 
-        if in_place:
-            return moment_data
-        else:
-            self.moment_data = moment_data
+        self.moment_data = moment_data
 
-    def vis(self, index=None, name=None, raw=True, figsize=(10, 10), interpolation=2, moment_color=True, raw_color=False, cmap='rainbow'):
+    def vis(self, index=None, name=None, raw=True, figsize=(10, 10), interpolation=2, moment_color=True, raw_color=False, cmap='rainbow', in_place=True):
         num_plots = len(self.moments)
         multi = self.moment_data.ndim > 2
 
@@ -143,7 +140,8 @@ class IRES:
 
         plt.show()
 
-        # return self
+        if not in_place:
+            return self
 
     #moment data syntatic sugar helper funcs
     @property
