@@ -1,8 +1,7 @@
 from typing import final
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import stats, ndimage
-import math
+from scipy import stats
 
 moment_funcs = {
     "mean": lambda x: np.mean(x, axis=-1),
