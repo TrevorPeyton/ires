@@ -35,7 +35,7 @@ class IRESObject:
 
     def __init__(self, data, win, stride, normalized=True, moments=None, moment_funcs=_moment_funcs, moment_names=_moment_names, *args, **kwargs):
         if moments is None:
-            self.moments = list(_moment_funcs.keys())
+            self.moments = list(moment_funcs.keys())
         else:
             self.moments = moments
         self.data = data
