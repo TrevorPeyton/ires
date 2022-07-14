@@ -104,7 +104,7 @@ class IRESObject:
             interp = np.interp(np.linspace(0, len(m), int(len(m)*interpolation)), np.arange(len(m)), m)
             m_range = max(m)-min(m)
             if moment_color:
-                ax[i].imshow(interp[None, :], extent=[0, len(m), min(m)-(m_range * .1), max(m)+(m_range * .1)], cmap=cmap, aspect='auto', interpolation='spline16', interpolation_stage="rgba")
+                ax[i].imshow(interp[None, :], extent=[0, len(m), min(m)-(m_range * .05), max(m)+(m_range * .05)], cmap=cmap, aspect='auto', interpolation='spline16', interpolation_stage="rgba")
             # if shadow:
             #     s = np.tile(np.linspace(interp.max(), interp.min(), len(interp)), (len(interp), 1)).T
             #     s[s>interp] = np.nan
@@ -112,25 +112,25 @@ class IRESObject:
             ax[i].plot(np.linspace(0, len(m), len(interp)), interp, color="black")
             ax[i].set_ylabel(self.moment_names[moment], rotation=22.5, labelpad=0, va="center", ha="right")
             ax[i].set_yticklabels('')
-            ax[i].set_yticks([min(m) + (m_range * .1), min(m) + (m_range / 2), max(m) - (m_range * .1)])
-            ax[i].set_yticklabels([f"{m.min():.2f}", f"{m.mean():.2f}", f"{m.max():.2f}"])
+            ax[i].set_yticks([min(m), min(m) + (m_range / 2), max(m)])
+            ax[i].set_yticklabels([f"{min(m):.2f}", f"{m.mean():.2f}", f"{max(m):.2f}"])
             ax[i].yaxis.tick_right()
-            ax[i].set_ylim(min(m)-(m_range * .1), max(m)+(m_range * .1))
+            ax[i].set_ylim(min(m)-(m_range * .05), max(m)+(m_range * .05))
             ax[i].set_xticklabels([])
         
         if raw:
             ax[-1].set_xlim(0, len(plot_data)-1)
             interp = np.interp(np.linspace(0,len(plot_data), int(len(plot_data)*interpolation)), np.arange(len(plot_data)), plot_data)
+            data_range = max(plot_data)-min(plot_data)
             if raw_color:
-                ax[-1].imshow(interp[None, :], extent=[0, len(plot_data), plot_data.min(), plot_data.max()], cmap=cmap, aspect='auto')
+                ax[-1].imshow(interp[None, :], extent=[0, len(plot_data), min(plot_data)-(data_range * .05), max(plot_data)+(data_range * .05)], cmap=cmap, aspect='auto')
             ax[-1].plot(np.linspace(0, len(plot_data), len(interp)), interp, color="black")
             ax[-1].set_ylabel("Raw", rotation=22.5, labelpad=0, va="center", ha="right")
             ax[-1].set_yticklabels('')
-            data_range = max(plot_data)-min(plot_data)
-            ax[-1].set_yticks([min(plot_data) + (data_range * .1), min(plot_data) + (data_range / 2), max(plot_data) - (data_range * .1)])
+            ax[-1].set_yticks([min(plot_data), min(plot_data) + (data_range / 2), max(plot_data)])
             ax[-1].set_yticklabels([f"{plot_data.min():.2f}", f"{plot_data.mean():.2f}", f"{plot_data.max():.2f}"])
             ax[-1].yaxis.tick_right()
-            ax[-1].set_ylim(min(plot_data), max(plot_data))
+            ax[-1].set_ylim(min(plot_data) - (data_range * .05), max(plot_data) + (data_range * .05))
             ax[-1].set_xticklabels([])
         
         fig.tight_layout()
