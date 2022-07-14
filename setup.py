@@ -14,6 +14,6 @@ setuptools.setup(
     project_urls = {
         "Bug Tracker": "https://github.com/TrevorPeyton/ires/issues"
     },
-    packages=['ires'],
+    py_modules=['ires'],
     install_requires=['requests'],
 )
