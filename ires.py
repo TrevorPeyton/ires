@@ -42,9 +42,6 @@ class IRESObject:
         self.moment_names = moment_names
         self.normalized = normalized
 
-        print()
-        print(*kwargs)
-
         #expand 1d data to match nd data
         expended = False
         if data.ndim == 1:
