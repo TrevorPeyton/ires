@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='ires',
-    version='1.0.8',
+    version='1.0.9',
     description='Ionizing Radiation Effects Spectroscopy',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -15,5 +15,5 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/TrevorPeyton/ires/issues"
     },
     py_modules=['ires'],
-    install_requires=['requests'],
+    install_requires = ['numpy', 'scipy', 'matplotlib']
 )
